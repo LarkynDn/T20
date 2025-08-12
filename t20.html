@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz de Classes - Tormenta 20</title>
+<style>
+  body {
+    background: #1a1a2e;
+    color: #eee;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 40px;
+  }
+  .container {
+    background: #16213e;
+    padding: 30px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 0 15px #0f3460;
+  }
+  h1 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #e94560;
+  }
+  #question {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    min-height: 60px;
+  }
+  .btn {
+    background: #e94560;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    margin: 8px 6px 8px 0;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .btn:hover {
+    background: #ff2e63;
+  }
+  #result {
+    margin-top: 25px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: center;
+    color: #f9f871;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz de Classes - Tormenta 20</h1>
+    <div id="question">Carregando quiz...</div>
+    <div id="answers"></div>
+    <div id="result"></div>
+  </div>
+
+<script>
+  const classes = {
+    arcanista: "Arcanista",
+    barbaro: "Bárbaro",
+    bardo: "Bardo",
+    bucaneiro: "Bucaneiro",
+    bruxo: "Bruxo",
+    cacador: "Caçador",
+    cavaleiro: "Cavaleiro",
+    clerigo: "Clérigo",
+    druida: "Druida",
+    feiticeiro: "Feiticeiro",
+    frade: "Frade",
+    guerreiro: "Guerreiro",
+    inventor: "Inventor",
+    ladino: "Ladino",
+    lutador: "Lutador",
+    nobre: "Nobre",
+    necromante: "Necromante",
+    paladino: "Paladino"
+  };
+
+  const quiz = [
+    // 0 - Começo
+    {
+      question: "Você deseja jogar com uma classe que usa magia?",
+      answers: [
+        { text: "Sim", next: 1 },
+        { text: "Não", next: 12 }  // Corrigido: começa não magia em 12
+      ]
+    },
+    // 1 - Magias: Divinas ou Arcanas?
+    {
+      question: "Você prefere magias divinas ou arcanas?",
+      answers: [
+        { text: "Divinas", next: 2 },
+        { text: "Arcanas", next: 7 }
+      ]
+    },
+    // 2 - Magias Divinas - suporte ou linha de frente?
+    {
+      question: "Você quer ser um suporte que cura e protege, ou um guerreiro sagrado na linha de frente?",
+      answers: [
+        { text: "Suporte e cura", next: 3 },
+        { text: "Linha de frente", classes: ["paladino"] }
+      ]
+    },
+    // 3 - Transformação animal (druida) ou templo (clerigo/frade)
+    {
+      question: "Você prefere transformação em animais e contato com a natureza, ou uma vida ligada a templos e igrejas?",
+      answers: [
+        { text: "Transformação em animais e natureza", classes: ["druida"] },
+        { text: "Vida ligada a templos e igrejas", next: 4 }
+      ]
+    },
+    // 4 - Clerigo ou Frade
+    {
+      question: "Você gosta de ficar atrás ajudando os aliados ou ser linha de frente?",
+      answers: [
+        { text: "Ficar atrás ajudando", classes: ["frade"] },
+        { text: "Linha de frente", classes: ["clerigo"] }
+      ]
+    },
+    // 5 - (Não usado, mantido para futuras expansões)
+    {
+      question: "",
+      answers: []
+    },
+    // 6 - (Não usado, mantido para futuras expansões)
+    {
+      question: "",
+      answers: []
+    },
+    // 7 - Magias Arcanas - estilo de magia
+    {
+      question: "Você prefere usar magia pela arte e performance, pelo poder inato (feiticeiro), ou por pactos sombrios?",
+      answers: [
+        { text: "Arte, música e performance", classes: ["bardo"] },
+        { text: "Poder inato (feiticeiro)", next: 8 },
+        { text: "Pactos sombrios", classes: ["bruxo"] }
+      ]
+    },
+    // 8 - Mago versátil ou necromante
+    {
+      question: "Você prefere ser um mago versátil ou focar em necromancia e magia sombria?",
+      answers: [
+        { text: "Mago versátil", classes: ["arcanista"] },
+        { text: "Necromancia e magia sombria", classes: ["necromante"] }
+      ]
+    },
+    // 9 e 10 - (Não usados, reservados)
+    {
+      question: "",
+      answers: []
+    },
+    {
+      question: "",
+      answers: []
+    },
+    // 11 - (Não usado)
+    {
+      question: "",
+      answers: []
+    },
+    // 12 - Não magia - inicio
+    {
+      question: "Você prefere lutar corpo a corpo ou à distância?",
+      answers: [
+        { text: "Corpo a corpo", next: 13 },
+        { text: "À distância", next: 18 }
+      ]
+    },
+    // 13 - Quer usar tecnologia, alquimia, engenhocas?
+    {
+      question: "Você gosta de usar tecnologia, alquimia, engenhocas e equipamentos especiais?",
+      answers: [
+        { text: "Sim", classes: ["inventor"] },
+        { text: "Não", next: 14 }
+      ]
+    },
+    // 14 - Estilo corpo a corpo preferido
+    {
+      question: "No combate corpo a corpo, qual seu estilo preferido?",
+      answers: [
+        { text: "Força bruta pura", classes: ["barbaro", "lutador"] },
+        { text: "Técnica marcial e armas", classes: ["guerreiro", "cavaleiro", "lutador"] },
+        { text: "Defesa e disciplina", classes: ["cavaleiro"] }, // paladino removido daqui
+        { text: "Combate ágil e furtivo", next: 15 },
+        { text: "Líder e estrategista", next: 16 }
+      ]
+    },
+    // 15 - Combate ágil e furtivo - ladino ou bucaneiro
+    {
+      question: "No combate ágil e furtivo, qual você prefere?",
+      answers: [
+        { text: "Combate ágil e furtivo com ataques rápidos (Ladino)", classes: ["ladino"] },
+        { text: "Aventureiro do mar com pistolas (Bucaneiro)", classes: ["bucaneiro"] }
+      ]
+    },
+    // 16 - Liderança - guerreiro ou cavaleiro
+    {
+      question: "Como você prefere exercer sua liderança no combate?",
+      answers: [
+        { text: "Guerreiro disciplinado e líder pelo exemplo", classes: ["guerreiro"] },
+        { text: "Nobreza, honra e armadura pesada (Cavaleiro)", classes: ["cavaleiro"] }
+      ]
+    },
+    // 17 - (Não usado, reservado)
+    {
+      question: "",
+      answers: []
+    },
+    // 18 - Combate à distância - armas de fogo ou tradicionais
+    {
+      question: "No combate à distância, qual seu estilo preferido?",
+      answers: [
+        { text: "Armas de fogo ou engenhocas tecnológicas", next: 19 },
+        { text: "Arcos, bestas, armadilhas e furtividade", next: 20 }
+      ]
+    },
+    // 19 - Escolha Bucaneiro ou Inventor no estilo fogo
+    {
+      question: "Você prefere ser um aventureiro do mar, usando pistolas e armas de fogo, ou um inventor que usa tecnologia e engenhocas?",
+      answers: [
+        { text: "Aventureiro do mar (Bucaneiro)", classes: ["bucaneiro"] },
+        { text: "Inventor que cria e usa engenhocas", classes: ["inventor"] }
+      ]
+    },
+    // 20 - Arcos, bestas, armadilhas e furtividade - ladino ou caçador
+    {
+      question: "Você gosta de usar astúcia, furtividade e truques no combate à distância?",
+      answers: [
+        { text: "Sim", classes: ["ladino"] },
+        { text: "Não", classes: ["cacador", "inventor"] }
+      ]
+    },
+    // 21 - (Não usado)
+    {
+      question: "",
+      answers: []
+    },
+    // 22 - (Não usado)
+    {
+      question: "",
+      answers: []
+    },
+    // 23 - Como prefere exercer sua liderança (repete liderança para assegurar)
+    {
+      question: "Como você prefere exercer sua liderança?",
+      answers: [
+        { text: "Nobreza, diplomacia e influência", classes: ["nobre"] },
+        { text: "Guerreiro em combate, líder pelo exemplo", classes: ["guerreiro"] },
+        { text: "Cavaleiro, honra e armadura pesada", classes: ["cavaleiro"] }
+      ]
+    }
+  ];
+
+  let current = 0;
+  let chosenClasses = [];
+
+  const questionEl = document.getElementById("question");
+  const answersEl = document.getElementById("answers");
+  const resultEl = document.getElementById("result");
+
+  function resetChosenClasses() {
+    chosenClasses = [];
+  }
+
+  function addClasses(classesArray) {
+    classesArray.forEach(c => {
+      if (!chosenClasses.includes(c)) {
+        chosenClasses.push(c);
+      }
+    });
+  }
+
+  function showQuestion(index) {
+    const q = quiz[index];
+    if(!q || !q.question) {
+      showResult();
+      return;
+    }
+    questionEl.textContent = q.question;
+    answersEl.innerHTML = "";
+    resultEl.textContent = "";
+
+    q.answers.forEach(answer => {
+      const btn = document.createElement("button");
+      btn.textContent = answer.text;
+      btn.classList.add("btn");
+      btn.onclick = () => handleAnswer(answer);
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(answer) {
+    if (answer.classes) {
+      addClasses(answer.classes);
+      showResult();
+    } else if (typeof answer.next === "number") {
+      current = answer.next;
+      showQuestion(current);
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    answersEl.innerHTML = "";
+    questionEl.textContent = "Sua classe ideal para jogar Tormenta 20 é:";
+    if (chosenClasses.length === 0) {
+      resultEl.textContent = "Ops, não conseguimos definir uma classe para você. Tente novamente!";
+      return;
+    }
+    resultEl.innerHTML = chosenClasses
+      .map(c => `<div>⭐ ${classes[c]}</div>`)
+      .join("");
+    const restartBtn = document.createElement("button");
+    restartBtn.textContent = "Jogar novamente";
+    restartBtn.classList.add("btn");
+    restartBtn.style.marginTop = "20px";
+    restartBtn.onclick = () => {
+      resetChosenClasses();
+      current = 0;
+      resultEl.textContent = "";
+      showQuestion(current);
+    };
+    answersEl.appendChild(restartBtn);
+  }
+
+  resetChosenClasses();
+  showQuestion(current);
+
+</script>
+
+</body>
+</html>
